@@ -1,3 +1,15 @@
-from django.shortcuts import render
+from rest_framework import mixins, generics
 
-# Create your views here.
+from .models import MyUser
+from .serializers import UserSerializer
+
+
+class UserViewSet(mixins.ListModelMixin, mixins.CreateModelMixin, generics.GenericAPIView):
+    queryset = MyUser.objects.all()
+    serializer_class = UserSerializer
+
+    def get(self, request, *args, **kwargs):
+        return self.list(request, *args, **kwargs)
+
+    def post(self, request, *args, **kwargs):
+        return self.create(request, *args, **kwargs)
