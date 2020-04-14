@@ -4,7 +4,7 @@ from .models import MyUser
 from .serializers import UserSerializer
 
 
-class UserViewSet(mixins.ListModelMixin, mixins.CreateModelMixin, generics.GenericAPIView):
+class UserAPIView(mixins.ListModelMixin, mixins.CreateModelMixin, generics.GenericAPIView):
     queryset = MyUser.objects.all()
     serializer_class = UserSerializer
 
