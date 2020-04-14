@@ -40,6 +40,8 @@ INSTALLED_APPS = [
     'rest_framework',
     'rest_framework_jwt',
 
+    'authAB_',
+    'core'
 ]
 
 MIDDLEWARE = [
@@ -64,6 +66,7 @@ REST_FRAMEWORK = {
 }
 
 ROOT_URLCONF = 'BeReady.urls'
+AUTH_USER_MODEL = 'authAB_.MyUser'
 
 TEMPLATES = [
     {
@@ -82,7 +85,6 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'BeReady.wsgi.application'
-
 
 # Database
 # https://docs.djangoproject.com/en/2.2/ref/settings/#databases
