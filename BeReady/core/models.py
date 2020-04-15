@@ -1,16 +1,13 @@
 from django.db import models
 
 # from BeReady.BeReady.authAB_.models import Teacher, Student
+from authAB_.models import Teacher, Student
 
 
 class Discussion(models.Model):
-    # OWNER = (
-    #     ('teacher', Teacher),
-    #     ('student', Student)
-    # )
     comment = models.CharField(max_length=200)
     date = models.DateTimeField(auto_now_add=True)
-    # owner = models.ForeignKey(choices=OWNER)
+    owner = models.ForeignKey( )
 
     class Meta:
         verbose_name = 'Discussion'
@@ -40,8 +37,8 @@ class Class(models.Model):
     name = models.CharField(max_length=200)
     classCode = models.CharField(max_length=200)
     subject = models.CharField(max_length=200)
-    # owner = models.ForeignKey(Teacher, on_delete=models.CASCADE, related_name='teachers')
-    # student = models.ForeignKey(Student, related_name='students')
+    owner = models.ForeignKey(Teacher, on_delete=models.CASCADE)
+    student = models.ForeignKey(Student, on_delete=models.CASCADE, related_name='students')
     post = models.ForeignKey(Post, models.SET_NULL, blank=True, null=True, related_name='posts')
 
     class Meta:
