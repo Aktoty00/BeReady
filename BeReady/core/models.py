@@ -5,9 +5,13 @@ from authAB_.models import Teacher, Student
 
 
 class Discussion(models.Model):
+    OWNER = (
+        ('teacher', Teacher),
+        ('student', Student)
+    )
     comment = models.CharField(max_length=200)
     date = models.DateTimeField(auto_now_add=True)
-    owner = models.ForeignKey( )
+    owner = models.ForeignKey(choices=OWNER, max_length=200)
 
     class Meta:
         verbose_name = 'Discussion'
