@@ -1,19 +1,29 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
 
-from .models import Discussion, Post, Class
+from .models import StudentWorkPost, NewsPost, StudentWorkDiscussion, NewsDiscussion, Lesson
 
 
-@admin.register(Discussion)
-class DiscussionAdmin(admin.ModelAdmin):
-    list_display = ('comment', 'date')
+@admin.register(StudentWorkPost)
+class StudentWorkPost(admin.ModelAdmin):
+    list_display = ('title', 'description', 'date', 'owner', 'file')
 
 
-@admin.register(Post)
-class PostAdmin(admin.ModelAdmin):
-    list_display = ('title', 'description', 'date', 'discussion', 'file')
+@admin.register(NewsPost)
+class NewsPost(admin.ModelAdmin):
+    list_display = ('title', 'description', 'date', 'owner', 'file')
 
 
-@admin.register(Class)
-class ClassAdmin(admin.ModelAdmin):
-    list_display = ('name', 'classCode', 'subject', 'post')
+@admin.register(StudentWorkDiscussion)
+class StudentWorkDiscussion(admin.ModelAdmin):
+    list_display = ('comment', 'date', 'owner', 'post')
+
+
+@admin.register(NewsDiscussion)
+class NewsDiscussion(admin.ModelAdmin):
+    list_display = ('comment', 'date', 'owner', 'post')
+
+
+@admin.register(Lesson)
+class Lesson(admin.ModelAdmin):
+    list_display = ('name', 'subject', 'classCode', 'owner', 'students', 'faculty')
