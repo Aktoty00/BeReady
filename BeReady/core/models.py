@@ -9,6 +9,7 @@ class AbstractPost(models.Model):
     description = models.CharField(max_length=200)
     date = models.DateTimeField(auto_now_add=True)
     owner = models.ForeignKey(Teacher, on_delete=models.CASCADE)
+    # classes
 
     class Meta:
         abstract = True
@@ -78,27 +79,16 @@ class AbstractStudentWorkDiscussion(AbstractPostDiscussion):
         return '{}: {}, {}, {}'.format(self.comment, self.date, self.owner, self.post)
 
 
-class StudentWorkDiscussionWithReply(AbstractStudentWorkDiscussion):
+class StudentWorkDiscussion(AbstractStudentWorkDiscussion):
     sendTo = models.ForeignKey(Teacher, related_name='from_owner_send_to', on_delete=models.CASCADE)
     owner = models.ForeignKey(Student, on_delete=models.CASCADE, related_name='StudentWorkDiscussionWithReplyOwner')
 
     class Meta:
-        verbose_name = 'StudentWorkDiscussionWithReply'
-        verbose_name_plural = 'StudentWorkDiscussionWithReplies'
+        verbose_name = 'StudentWorkDiscussion'
+        verbose_name_plural = 'StudentWorkDiscussion'
 
     def __str__(self):
         return '{}: {}, {}, {}, {}'.format(self.comment, self.date, self.sendTo, self.owner, self.post)
-
-
-class StudentWorkDiscussionWithoutReply(AbstractStudentWorkDiscussion):
-    owner = models.ForeignKey(Student, on_delete=models.CASCADE, related_name='StudentWorkDiscussionWithoutReplyOwner')
-
-    class Meta:
-        verbose_name = 'StudentWorkDiscussionWithoutReply'
-        verbose_name_plural = 'StudentWorkDiscussionWithoutReplies'
-
-    def __str__(self):
-        return '{}: {}, {}, {}'.format(self.comment, self.date, self.owner, self.post)
 
 
 class NewsDiscussion(AbstractPostDiscussion):

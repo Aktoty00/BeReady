@@ -1,9 +1,9 @@
 from rest_framework import mixins, generics
 
-from .models import StudentWorkPost, NewsPost, StudentWorkDiscussionWithReply, \
-    StudentWorkDiscussionWithoutReply, NewsDiscussion, Lesson
+from .models import StudentWorkPost, NewsPost, StudentWorkDiscussion, \
+    NewsDiscussion, Lesson
 from .serializers import StudentWorkPostSerializer, NewsPostLongSerializer, DiscussionWithReplySerializer, \
-    DiscussionWithoutReplySerializer, NewsDiscussionLongSerializer, LessonLongSerializer
+    NewsDiscussionLongSerializer, LessonLongSerializer
 
 
 class StudentWorkPostAPIView(mixins.ListModelMixin, generics.GenericAPIView):
@@ -23,16 +23,8 @@ class NewsPostAPIView(mixins.ListModelMixin, generics.GenericAPIView):
 
 
 class DiscussionWithReplyAPIView(mixins.ListModelMixin, generics.GenericAPIView):
-    queryset = StudentWorkDiscussionWithReply.objects.all()
+    queryset = StudentWorkDiscussion.objects.all()
     serializer_class = DiscussionWithReplySerializer
-
-    def get(self, request, *args, **kwargs):
-        return self.list(request, *args, **kwargs)
-
-
-class DiscussionWithoutReplyAPIView(mixins.ListModelMixin, generics.GenericAPIView):
-    queryset = StudentWorkDiscussionWithoutReply.objects.all()
-    serializer_class = DiscussionWithoutReplySerializer
 
     def get(self, request, *args, **kwargs):
         return self.list(request, *args, **kwargs)

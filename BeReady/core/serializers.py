@@ -1,8 +1,8 @@
 from rest_framework import serializers
 
 from authAB_.serializers import TeacherSerializer, StudentSerializer
-from .models import StudentWorkPost, NewsPost, StudentWorkDiscussionWithReply, \
-    StudentWorkDiscussionWithoutReply, NewsDiscussion, Lesson
+from .models import StudentWorkPost, NewsPost, StudentWorkDiscussion, \
+    NewsDiscussion, Lesson
 
 
 class StudentWorkPostSerializer(serializers.ModelSerializer):
@@ -40,19 +40,8 @@ class DiscussionWithReplySerializer(serializers.ModelSerializer):
     sendTo = TeacherSerializer(read_only=True)
 
     class Meta:
-        model = StudentWorkDiscussionWithReply
+        model = StudentWorkDiscussion
         fields = ('comment', 'date', 'sendTo', 'owner', 'post')
-
-    def validate(self, attrs):
-        return attrs
-
-
-class DiscussionWithoutReplySerializer(serializers.ModelSerializer):
-    owner = StudentSerializer(read_only=True)
-
-    class Meta:
-        model = StudentWorkDiscussionWithoutReply
-        fields = ('comment', 'date', 'owner', 'post')
 
     def validate(self, attrs):
         return attrs
