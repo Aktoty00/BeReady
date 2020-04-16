@@ -3,12 +3,14 @@ from django.db import models
 
 from authAB_.models import Teacher, Student
 
+from authAB_.models import MyUser
+
 
 class AbstractPost(models.Model):
     title = models.CharField(max_length=200)
     description = models.CharField(max_length=200)
     date = models.DateTimeField(auto_now_add=True)
-    owner = models.ForeignKey(Teacher, on_delete=models.CASCADE)
+    owner = models.ForeignKey(MyUser, on_delete=models.CASCADE)
     # classes
 
     class Meta:
@@ -56,7 +58,7 @@ class AbstractDiscussion(models.Model):
 
 
 class AbstractPostDiscussion(AbstractDiscussion):
-    owner = models.ForeignKey(Student, on_delete=models.CASCADE, related_name='AbstractPostDiscussionOwner')
+    owner = models.ForeignKey(MyUser, on_delete=models.CASCADE, related_name='AbstractPostDiscussionOwner')
 
     class Meta:
         abstract = True
@@ -81,7 +83,7 @@ class AbstractStudentWorkDiscussion(AbstractPostDiscussion):
 
 class StudentWorkDiscussion(AbstractStudentWorkDiscussion):
     sendTo = models.ForeignKey(Teacher, related_name='from_owner_send_to', on_delete=models.CASCADE)
-    owner = models.ForeignKey(Student, on_delete=models.CASCADE, related_name='StudentWorkDiscussionWithReplyOwner')
+    owner = models.ForeignKey(MyUser, on_delete=models.CASCADE, related_name='StudentWorkDiscussionWithReplyOwner')
 
     class Meta:
         verbose_name = 'StudentWorkDiscussion'

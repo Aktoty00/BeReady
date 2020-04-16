@@ -1,19 +1,26 @@
 from rest_framework import serializers
-
+import authAB_.serializers
 from authAB_.serializers import TeacherSerializer, StudentSerializer
 from .models import StudentWorkPost, NewsPost, StudentWorkDiscussion, \
     NewsDiscussion, Lesson
 
 
-class StudentWorkPostSerializer(serializers.ModelSerializer):
-    owner = TeacherSerializer(read_only=True)
+class StudentWorkPostSerializer(serializers.Serializer):
+    title = serializers.CharField(required=True)
+    description = serializers.CharField(required=True)
+    date = serializers.DateTimeField(read_only=True)
+    owner = authAB_.serializers.UserSerializer(default=serializers.CurrentUserDefault())
+    file = serializers.FileField(required=False)
 
-    class Meta:
-        model = StudentWorkPost
-        fields = ('title', 'description', 'date', 'owner', 'file')
+    def create(self, validated_data):
+        student_work_post = StudentWorkPost(**validated_data)
+        student_work_post.save()
+        return student_work_post
 
-    def validate(self, attrs):
-        return attrs
+    def update(self, instance, validated_data):
+        instance.name = validated_data.get('name', instance.name)
+        instance.save()
+        return instance
 
 
 class NewsPostShortSerializer(serializers.ModelSerializer):
@@ -26,7 +33,7 @@ class NewsPostShortSerializer(serializers.ModelSerializer):
 
 
 class NewsPostLongSerializer(NewsPostShortSerializer):
-    owner = TeacherSerializer(read_only=True)
+    owner = authAB_.serializers.UserSerializer(default=serializers.CurrentUserDefault())
 
     class Meta(NewsPostShortSerializer.Meta):
         fields = NewsPostShortSerializer.Meta.fields + ('owner', 'file')
@@ -35,16 +42,24 @@ class NewsPostLongSerializer(NewsPostShortSerializer):
         return attrs
 
 
-class DiscussionWithReplySerializer(serializers.ModelSerializer):
-    owner = StudentSerializer(read_only=True)
+class StudentWorkDiscussionSerializer(serializers.Serializer):
+    comment = serializers.CharField(required=True)
+    date = serializers.DateTimeField(read_only=True)
+    post = StudentWorkPostSerializer(read_only=True)
+    post_id = serializers.IntegerField(write_only=True)
+    owner = authAB_.serializers.UserSerializer(default=serializers.CurrentUserDefault())
     sendTo = TeacherSerializer(read_only=True)
+    sendTo_id = serializers.IntegerField(write_only=True)
 
-    class Meta:
-        model = StudentWorkDiscussion
-        fields = ('comment', 'date', 'sendTo', 'owner', 'post')
+    def create(self, validated_data):
+        student_work_discussion = StudentWorkDiscussion(**validated_data)
+        student_work_discussion.save()
+        return student_work_discussion
 
-    def validate(self, attrs):
-        return attrs
+    def update(self, instance, validated_data):
+        instance.name = validated_data.get('name', instance.name)
+        instance.save()
+        return instance
 
 
 class NewsDiscussionShortSerializer(serializers.ModelSerializer):
@@ -57,10 +72,10 @@ class NewsDiscussionShortSerializer(serializers.ModelSerializer):
 
 
 class NewsDiscussionLongSerializer(NewsDiscussionShortSerializer):
-    owner = StudentSerializer(read_only=True)
+    owner = authAB_.serializers.UserSerializer(default=serializers.CurrentUserDefault())
 
     class Meta(NewsDiscussionShortSerializer.Meta):
-        fields = NewsDiscussionShortSerializer.Meta.fields + ('owner', 'post')
+        fields = NewsDiscussionShortSerializer.Meta.fields + ('owner', 'post', 'owner_id')
 
     def validate(self, attrs):
         return attrs
@@ -77,7 +92,9 @@ class LessonShortSerializer(serializers.ModelSerializer):
 
 class LessonLongSerializer(LessonShortSerializer):
     owner = TeacherSerializer(read_only=True)
+    owner_id = serializers.IntegerField(write_only=True)
     students = StudentSerializer(read_only=True)
+    students_id = serializers.IntegerField(write_only=True)
 
     class Meta(LessonShortSerializer.Meta):
-        fields = LessonShortSerializer.Meta.fields + ('owner', 'students')
+        fields = LessonShortSerializer.Meta.fields + ('owner', 'students', 'owner_id', 'students_id')

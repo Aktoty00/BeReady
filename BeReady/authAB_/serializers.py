@@ -1,12 +1,12 @@
 from rest_framework import serializers
 
-from .models import MyUser
+from .models import MyUser, Teacher, Student
 
 
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = MyUser
-        fields = ('first_name', 'last_name', 'email')
+        fields = ('id', 'username', 'first_name', 'last_name')
 
     def validate(self, attrs):
         return attrs
@@ -14,14 +14,34 @@ class UserSerializer(serializers.ModelSerializer):
 
 class StudentSerializer(UserSerializer):
     stage = serializers.CharField(required=True)
+    password = serializers.CharField(write_only=True)
 
     class Meta(UserSerializer.Meta):
-        fields = UserSerializer.Meta.fields + ('username', 'stage')
+        fields = UserSerializer.Meta.fields + ('stage', 'password')
+
+    def create(self, validated_data):
+        student = Student.objects.create_user(username=validated_data['username'],
+                                              first_name=validated_data.get('first_name', ''),
+                                              last_name=validated_data.get('last_name', ''),
+                                              address=validated_data.get('address', ''))
+        student.set_password(validated_data['password'])
+        student.save()
+        return student
 
 
 class TeacherSerializer(UserSerializer):
     level = serializers.CharField()
+    password = serializers.CharField(write_only=True)
 
     class Meta(UserSerializer.Meta):
-        fields = UserSerializer.Meta.fields + ('username', 'level')
+        fields = UserSerializer.Meta.fields + ('level', 'password')
+
+    def create(self, validated_data):
+        teacher = Teacher.objects.create_user(username=validated_data['username'],
+                                          first_name=validated_data.get('first_name', ''),
+                                          last_name=validated_data.get('last_name', ''),
+                                          address=validated_data.get('address', ''))
+        teacher.set_password(validated_data['password'])
+        teacher.save()
+        return teacher
 
