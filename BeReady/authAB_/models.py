@@ -21,6 +21,14 @@ class UserAbstract(MyUser):
 
 
 class Teacher(UserAbstract):
+    LEVEL = (
+        ('Associate degree', 'Associate degree'),
+        ('Bachelor degree', 'Bachelor degree'),
+        ('Master degree', 'Master degree'),
+        ('Doctoral degree', 'Doctoral degree'),
+    )
+    level = models.CharField(choices=LEVEL, max_length=200, default='Associate degree')
+
     class Meta:
         verbose_name = 'Teacher'
         verbose_name_plural = 'Teachers'
@@ -30,6 +38,14 @@ class Teacher(UserAbstract):
 
 
 class Student(UserAbstract):
+    STAGE = (
+        ('Freshman', 'Freshman'),
+        ('Sophomore', 'Sophomore'),
+        ('Junior', 'Junior'),
+        ('Senior', 'Senior')
+    )
+    stage = models.CharField(choices=STAGE, max_length=200, default='Freshman')
+
     class Meta:
         verbose_name = 'Student'
         verbose_name_plural = 'Students'
