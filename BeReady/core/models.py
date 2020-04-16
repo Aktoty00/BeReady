@@ -1,12 +1,14 @@
 from django.db import models
-from authAB_.models import User
+# from authAB_.models import User
+
+from authAB_.models import Teacher, Student
 
 
 class AbstractPost(models.Model):
     title = models.CharField(max_length=200)
     description = models.CharField(max_length=200)
     date = models.DateTimeField(auto_now_add=True)
-    owner = models.ForeignKey(User, on_delete=models.CASCADE)
+    owner = models.ForeignKey(Teacher, on_delete=models.CASCADE)
 
     class Meta:
         abstract = True
@@ -53,7 +55,7 @@ class AbstractDiscussion(models.Model):
 
 
 class AbstractPostDiscussion(AbstractDiscussion):
-    owner = models.ForeignKey(User, on_delete=models.CASCADE, related_name='AbstractPostDiscussionOwner')
+    owner = models.ForeignKey(Student, on_delete=models.CASCADE, related_name='AbstractPostDiscussionOwner')
 
     class Meta:
         abstract = True
@@ -77,8 +79,8 @@ class AbstractStudentWorkDiscussion(AbstractPostDiscussion):
 
 
 class StudentWorkDiscussionWithReply(AbstractStudentWorkDiscussion):
-    sendTo = models.ForeignKey(User, related_name='from_owner_send_to', on_delete=models.CASCADE)
-    owner = models.ForeignKey(User, on_delete=models.CASCADE, related_name='StudentWorkDiscussionWithReplyOwner')
+    sendTo = models.ForeignKey(Teacher, related_name='from_owner_send_to', on_delete=models.CASCADE)
+    owner = models.ForeignKey(Student, on_delete=models.CASCADE, related_name='StudentWorkDiscussionWithReplyOwner')
 
     class Meta:
         verbose_name = 'StudentWorkDiscussionWithReply'
@@ -89,7 +91,7 @@ class StudentWorkDiscussionWithReply(AbstractStudentWorkDiscussion):
 
 
 class StudentWorkDiscussionWithoutReply(AbstractStudentWorkDiscussion):
-    owner = models.ForeignKey(User, on_delete=models.CASCADE, related_name='StudentWorkDiscussionWithoutReplyOwner')
+    owner = models.ForeignKey(Student, on_delete=models.CASCADE, related_name='StudentWorkDiscussionWithoutReplyOwner')
 
     class Meta:
         verbose_name = 'StudentWorkDiscussionWithoutReply'
@@ -125,8 +127,8 @@ class Class(models.Model):
 
 class Lesson(Class):
     subject = models.CharField(max_length=200)
-    owner = models.ForeignKey(User, on_delete=models.CASCADE)
-    students = models.ForeignKey(User, on_delete=models.CASCADE, related_name='students')
+    owner = models.ForeignKey(Teacher, on_delete=models.CASCADE)
+    students = models.ForeignKey(Student, on_delete=models.CASCADE, related_name='students')
 
     class Meta:
         verbose_name = 'Lesson'
