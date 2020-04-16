@@ -1,9 +1,12 @@
 from django.db import models
-# from authAB_.models import User
+import datetime
 
-from authAB_.models import Teacher, Student
+from authAB_.models import Teacher, Student, MyUser
 
-from authAB_.models import MyUser
+
+class DianaManager(models.Manager):
+    def diana_objects(self):
+        return self.filter(owner='Diana')
 
 
 class AbstractPost(models.Model):
@@ -35,6 +38,8 @@ class StudentWorkPost(AbstractPost):
 
 class NewsPost(AbstractPost):
     file = models.FileField(upload_to='news_posts', blank=True, null=True)
+    objects = models.Manager()
+    diana_objects = DianaManager()
 
     class Meta:
         verbose_name = 'NewsPost'
@@ -42,6 +47,11 @@ class NewsPost(AbstractPost):
 
     def __str__(self):
         return '{}: {}, {}, {}, {}'.format(self.title, self.description, self.date, self.owner, self.file)
+
+
+class DiscussionManager(models.Manager):
+    def today_discussion(self):
+        return self.filter(date=datetime.date.today())
 
 
 class AbstractDiscussion(models.Model):
@@ -84,6 +94,7 @@ class AbstractStudentWorkDiscussion(AbstractPostDiscussion):
 class StudentWorkDiscussion(AbstractStudentWorkDiscussion):
     sendTo = models.ForeignKey(Teacher, related_name='from_owner_send_to', on_delete=models.CASCADE)
     owner = models.ForeignKey(MyUser, on_delete=models.CASCADE, related_name='StudentWorkDiscussionWithReplyOwner')
+    objects = DiscussionManager()
 
     class Meta:
         verbose_name = 'StudentWorkDiscussion'
