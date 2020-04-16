@@ -1,7 +1,7 @@
 from django.contrib import admin
-from django.contrib.auth.admin import UserAdmin
 
-from .models import StudentWorkPost, NewsPost, StudentWorkDiscussion, NewsDiscussion, Lesson
+from .models import StudentWorkPost, NewsPost, NewsDiscussion, Lesson, \
+    StudentWorkDiscussionWithReply, StudentWorkDiscussionWithoutReply
 
 
 @admin.register(StudentWorkPost)
@@ -14,8 +14,13 @@ class NewsPost(admin.ModelAdmin):
     list_display = ('title', 'description', 'date', 'owner', 'file')
 
 
-@admin.register(StudentWorkDiscussion)
-class StudentWorkDiscussion(admin.ModelAdmin):
+@admin.register(StudentWorkDiscussionWithReply)
+class StudentWorkDiscussionWithReply(admin.ModelAdmin):
+    list_display = ('comment', 'date', 'owner', 'post', 'sendTo')
+
+
+@admin.register(StudentWorkDiscussionWithoutReply)
+class StudentWorkDiscussionWithReply(admin.ModelAdmin):
     list_display = ('comment', 'date', 'owner', 'post')
 
 
@@ -26,4 +31,4 @@ class NewsDiscussion(admin.ModelAdmin):
 
 @admin.register(Lesson)
 class Lesson(admin.ModelAdmin):
-    list_display = ('name', 'subject', 'classCode', 'owner', 'students', 'faculty')
+    list_display = ('name', 'subject', 'classCode', 'owner', 'students')

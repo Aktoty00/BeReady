@@ -7,20 +7,20 @@ class AbstractPost(models.Model):
     description = models.CharField(max_length=200)
     date = models.DateTimeField(auto_now_add=True)
     owner = models.ForeignKey(User, on_delete=models.CASCADE)
-    file = models.FileField(upload_to='post_files', blank=True, null=True)
 
     class Meta:
         abstract = True
-        verbose_name = 'Post'
-        verbose_name_plural = 'Posts'
+        verbose_name = 'AbstractPost'
+        verbose_name_plural = 'AbstractPosts'
 
     def __str__(self):
         return '{}: {}, {}, {}, {}'.format(self.title, self.description, self.date, self.owner, self.file)
 
 
 class StudentWorkPost(AbstractPost):
+    file = models.FileField(upload_to='student_work_posts', blank=True, null=True)
+
     class Meta:
-        abstract = True
         verbose_name = 'StudentWorkPost'
         verbose_name_plural = 'StudentWorkPosts'
 
@@ -29,8 +29,9 @@ class StudentWorkPost(AbstractPost):
 
 
 class NewsPost(AbstractPost):
+    file = models.FileField(upload_to='news_posts', blank=True, null=True)
+
     class Meta:
-        abstract = True
         verbose_name = 'NewsPost'
         verbose_name_plural = 'NewsPosts'
 
@@ -38,32 +39,67 @@ class NewsPost(AbstractPost):
         return '{}: {}, {}, {}, {}'.format(self.title, self.description, self.date, self.owner, self.file)
 
 
-class DiscussionAbstract(models.Model):
+class AbstractDiscussion(models.Model):
     comment = models.CharField(max_length=200)
     date = models.DateTimeField(auto_now_add=True)
-    owner = models.ForeignKey(User, on_delete=models.CASCADE)
 
     class Meta:
         abstract = True
-        verbose_name = 'Discussion'
-        verbose_name_plural = 'Discussions'
+        verbose_name = 'AbstractDiscussion'
+        verbose_name_plural = 'AbstractDiscussions'
+
+    def __str__(self):
+        return '{}: {}'.format(self.comment, self.date)
+
+
+class AbstractPostDiscussion(AbstractDiscussion):
+    owner = models.ForeignKey(User, on_delete=models.CASCADE, related_name='AbstractPostDiscussionOwner')
+
+    class Meta:
+        abstract = True
+        verbose_name = 'AbstractPostDiscussion'
+        verbose_name_plural = 'AbstractPostDiscussions'
 
     def __str__(self):
         return '{}: {}, {}'.format(self.comment, self.date, self.owner)
 
 
-class StudentWorkDiscussion(DiscussionAbstract):
+class AbstractStudentWorkDiscussion(AbstractPostDiscussion):
     post = models.ForeignKey(StudentWorkPost, on_delete=models.CASCADE)
 
     class Meta:
-        verbose_name = 'StudentWorkDiscussion'
-        verbose_name_plural = 'StudentWorkDiscussions'
+        abstract = True
+        verbose_name = 'AbstractStudentWorkDiscussion'
+        verbose_name_plural = 'AbstractStudentWorkDiscussions'
 
     def __str__(self):
         return '{}: {}, {}, {}'.format(self.comment, self.date, self.owner, self.post)
 
 
-class NewsDiscussion(DiscussionAbstract):
+class StudentWorkDiscussionWithReply(AbstractStudentWorkDiscussion):
+    sendTo = models.ForeignKey(User, related_name='from_owner_send_to', on_delete=models.CASCADE)
+    owner = models.ForeignKey(User, on_delete=models.CASCADE, related_name='StudentWorkDiscussionWithReplyOwner')
+
+    class Meta:
+        verbose_name = 'StudentWorkDiscussionWithReply'
+        verbose_name_plural = 'StudentWorkDiscussionWithReplies'
+
+    def __str__(self):
+        return '{}: {}, {}, {}, {}'.format(self.comment, self.date, self.sendTo, self.owner, self.post)
+
+
+class StudentWorkDiscussionWithoutReply(AbstractStudentWorkDiscussion):
+    owner = models.ForeignKey(User, on_delete=models.CASCADE, related_name='StudentWorkDiscussionWithoutReplyOwner')
+
+    class Meta:
+        verbose_name = 'StudentWorkDiscussionWithoutReply'
+        verbose_name_plural = 'StudentWorkDiscussionWithoutReplies'
+
+    def __str__(self):
+        return '{}: {}, {}, {}'.format(self.comment, self.date, self.owner, self.post)
+
+
+class NewsDiscussion(AbstractPostDiscussion):
     post = models.ForeignKey(NewsPost, on_delete=models.CASCADE)
 
     class Meta:
@@ -77,9 +113,6 @@ class NewsDiscussion(DiscussionAbstract):
 class Class(models.Model):
     name = models.CharField(max_length=200)
     classCode = models.CharField(max_length=200)
-    subject = models.CharField(max_length=200)
-    owner = models.ForeignKey(User, on_delete=models.CASCADE)
-    students = models.ForeignKey(User, on_delete=models.CASCADE, related_name='students')
 
     class Meta:
         abstract = True
@@ -87,15 +120,17 @@ class Class(models.Model):
         verbose_name_plural = 'Classes'
 
     def __str__(self):
-        return '{}: {}, {}, {}, {}'.format(self.name, self.subject, self.classCode, self.owner, self.students)
+        return '{}: {}'.format(self.name, self.classCode)
 
 
 class Lesson(Class):
-    faculty = models.CharField(max_length=200)
+    subject = models.CharField(max_length=200)
+    owner = models.ForeignKey(User, on_delete=models.CASCADE)
+    students = models.ForeignKey(User, on_delete=models.CASCADE, related_name='students')
 
     class Meta:
         verbose_name = 'Lesson'
         verbose_name_plural = 'Lessons'
 
     def __str__(self):
-        return '{}: {}, {}, {}, {}, {}'.format(self.name, self.subject, self.classCode, self.owner, self.students, self.faculty)
+        return '{}: {}, {}, {}, {}'.format(self.name, self.subject, self.classCode, self.owner, self.students)
