@@ -27,7 +27,7 @@ class Teacher(UserAbstract):
         ('Master degree', 'Master degree'),
         ('Doctoral degree', 'Doctoral degree'),
     )
-    level = models.CharField(choices=LEVEL, max_length=200, default='Associate degree')
+    level = models.CharField(choices=LEVEL, max_length=200)
 
     class Meta:
         verbose_name = 'Teacher'
