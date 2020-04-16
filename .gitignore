@@ -81,7 +81,6 @@ __pycache__/
 local_settings.py
 
 .myvenv
-db.sqlite3
 
 
 
@@ -141,7 +140,6 @@ coverage.xml
 # Django stuff:
 *.log
 local_settings.py
-db.sqlite3
 
 # Flask stuff:
 instance/
