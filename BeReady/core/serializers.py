@@ -82,9 +82,11 @@ class NewsDiscussionLongSerializer(NewsDiscussionShortSerializer):
 
 
 class LessonShortSerializer(serializers.ModelSerializer):
+    id = serializers.IntegerField(read_only=True)
+
     class Meta:
         model = Lesson
-        fields = ('name', 'classCode', 'subject')
+        fields = ('id', 'name', 'classCode', 'subject')
 
     def validate(self, attrs):
         return attrs

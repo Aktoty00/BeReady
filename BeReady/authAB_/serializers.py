@@ -14,10 +14,11 @@ class UserSerializer(serializers.ModelSerializer):
 
 class StudentSerializer(UserSerializer):
     stage = serializers.CharField(required=True)
+    age = serializers.IntegerField()
     password = serializers.CharField(write_only=True)
 
     class Meta(UserSerializer.Meta):
-        fields = UserSerializer.Meta.fields + ('stage', 'password')
+        fields = UserSerializer.Meta.fields + ('stage', 'password', 'age')
 
     def create(self, validated_data):
         student = Student.objects.create_user(username=validated_data['username'],
@@ -34,7 +35,7 @@ class TeacherSerializer(UserSerializer):
     password = serializers.CharField(write_only=True)
 
     class Meta(UserSerializer.Meta):
-        fields = UserSerializer.Meta.fields + ('level', 'password')
+        fields = UserSerializer.Meta.fields + ('level', 'password', 'email')
 
     def create(self, validated_data):
         teacher = Teacher.objects.create_user(username=validated_data['username'],

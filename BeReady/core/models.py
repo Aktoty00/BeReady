@@ -131,7 +131,7 @@ class Class(models.Model):
 class Lesson(Class):
     subject = models.CharField(max_length=200)
     owner = models.ForeignKey(Teacher, on_delete=models.CASCADE)
-    students = models.ForeignKey(Student, on_delete=models.CASCADE, related_name='students')
+    students = models.ForeignKey(Student, on_delete=models.CASCADE, related_name='lessons')
 
     class Meta:
         verbose_name = 'Lesson'

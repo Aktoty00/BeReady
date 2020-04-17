@@ -1,8 +1,8 @@
 from rest_framework import mixins, generics
 
-from .models import StudentWorkPost, NewsPost, StudentWorkDiscussion, \
+from ..models import StudentWorkPost, NewsPost, StudentWorkDiscussion, \
     NewsDiscussion, Lesson
-from .serializers import StudentWorkPostSerializer, NewsPostLongSerializer, StudentWorkDiscussionSerializer, \
+from ..serializers import StudentWorkPostSerializer, NewsPostLongSerializer, StudentWorkDiscussionSerializer, \
     NewsDiscussionLongSerializer, LessonLongSerializer
 
 
