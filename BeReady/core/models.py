@@ -10,7 +10,7 @@ class DianaManager(models.Manager):
 
 
 class AbstractPost(models.Model):
-    title = models.CharField(max_length=200)
+    title = models.CharField(max_length=200, blank=True)
     description = models.CharField(max_length=200)
     date = models.DateTimeField(auto_now_add=True)
     owner = models.ForeignKey(MyUser, on_delete=models.CASCADE)
@@ -55,7 +55,7 @@ class DiscussionManager(models.Manager):
 
 
 class AbstractDiscussion(models.Model):
-    comment = models.CharField(max_length=200)
+    comment = models.CharField(max_length=200, blank=True)
     date = models.DateTimeField(auto_now_add=True)
 
     class Meta:
@@ -129,7 +129,7 @@ class Class(models.Model):
 
 
 class Lesson(Class):
-    subject = models.CharField(max_length=200)
+    subject = models.CharField(max_length=200, blank=True)
     owner = models.ForeignKey(Teacher, on_delete=models.CASCADE)
     students = models.ForeignKey(Student, on_delete=models.CASCADE, related_name='lessons')
 

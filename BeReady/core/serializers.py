@@ -1,8 +1,12 @@
+import logging
+
 from rest_framework import serializers
 import authAB_.serializers
 from authAB_.serializers import TeacherSerializer, StudentSerializer
 from .models import StudentWorkPost, NewsPost, StudentWorkDiscussion, \
     NewsDiscussion, Lesson
+
+logger = logging.getLogger(__name__)
 
 
 class StudentWorkPostSerializer(serializers.Serializer):
@@ -22,6 +26,15 @@ class StudentWorkPostSerializer(serializers.Serializer):
         instance.save()
         return instance
 
+    def validate_title(self, value):
+        if '/' in value:
+            logger.error(f'Invalid char in title: {value}')
+            raise serializers.ValidationError('Title can not have a slash')
+        if len(value) == 0:
+            logger.error(f'Title is empty')
+            raise serializers.ValidationError('Title can not be empty, please write something')
+        return value
+
 
 class NewsPostShortSerializer(serializers.ModelSerializer):
     class Meta:
@@ -30,6 +43,12 @@ class NewsPostShortSerializer(serializers.ModelSerializer):
 
     def validate(self, attrs):
         return attrs
+
+    def validate_file(self, value):
+        if value is None:
+            logger.error(f'File has not selected')
+            raise serializers.ValidationError('Please, upload a file')
+        return value
 
 
 class NewsPostLongSerializer(NewsPostShortSerializer):
@@ -60,6 +79,15 @@ class StudentWorkDiscussionSerializer(serializers.Serializer):
         instance.name = validated_data.get('name', instance.name)
         instance.save()
         return instance
+
+    def validate_comment(self, value):
+        if '$' in value:
+            logger.error(f'Invalid char detected in comment: {value}')
+            raise serializers.ValidationError('Invalid char detected in comment')
+        if len(value) == 0:
+            logger.error(f'Comment is empty')
+            raise serializers.ValidationError('Comment is empty, write something')
+        return value
 
 
 class NewsDiscussionShortSerializer(serializers.ModelSerializer):
@@ -100,3 +128,9 @@ class LessonLongSerializer(LessonShortSerializer):
 
     class Meta(LessonShortSerializer.Meta):
         fields = LessonShortSerializer.Meta.fields + ('owner', 'students', 'owner_id', 'students_id')
+
+    def validate_subject(self, value):
+        if len(value) == 0:
+            logger.error(f'Subject is empty')
+            raise serializers.ValidationError('Subject name can not be empty, please write something')
+        return value
