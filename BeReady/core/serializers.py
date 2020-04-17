@@ -22,6 +22,13 @@ class StudentWorkPostSerializer(serializers.Serializer):
         instance.save()
         return instance
 
+    def validate_title(self, value):
+        if '/' in value:
+            raise serializers.ValidationError('Title can not have a slash')
+        if len(value) == 0:
+            raise serializers.ValidationError('Title can not be empty, please write something')
+        return value
+
 
 class NewsPostShortSerializer(serializers.ModelSerializer):
     class Meta:
@@ -30,6 +37,11 @@ class NewsPostShortSerializer(serializers.ModelSerializer):
 
     def validate(self, attrs):
         return attrs
+
+    def validate_file(self, value):
+        if value is None:
+            raise serializers.ValidationError('Please, upload a file')
+        return value
 
 
 class NewsPostLongSerializer(NewsPostShortSerializer):
@@ -60,6 +72,13 @@ class StudentWorkDiscussionSerializer(serializers.Serializer):
         instance.name = validated_data.get('name', instance.name)
         instance.save()
         return instance
+
+    def validate_comment(self, value):
+        if ['$', '#', '~', '/', '%'] in value:
+            raise serializers.ValidationError('invalid char detected in comment')
+        if len(value):
+            raise serializers.ValidationError('Comment is empty, write something')
+        return value
 
 
 class NewsDiscussionShortSerializer(serializers.ModelSerializer):
@@ -98,3 +117,8 @@ class LessonLongSerializer(LessonShortSerializer):
 
     class Meta(LessonShortSerializer.Meta):
         fields = LessonShortSerializer.Meta.fields + ('owner', 'students', 'owner_id', 'students_id')
+
+    def validate_subject(self, value):
+        if len(value) == 0:
+            raise serializers.ValidationError('Subject name can not be empty, please write something')
+        return value
