@@ -1,6 +1,10 @@
+import logging
+
 from rest_framework import serializers
 
 from .models import MyUser, Teacher, Student, STAGE, LEVEL
+
+logger = logging.getLogger(__name__)
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -32,7 +36,9 @@ class StudentSerializer(UserSerializer):
 
     def validate_stage(self, value):
         if (value, value) not in STAGE:
+            logger.error(f'Invalid choice for stage: {value}')
             raise serializers.ValidationError('Subject name can be only: Freshman, Sophomore, Junior, Senior')
+
         return value
 
 
@@ -55,6 +61,7 @@ class TeacherSerializer(UserSerializer):
 
     def validate_level(self, value):
         if (value, value) not in LEVEL:
+            logger.error(f'Invalid choice for level: {value}')
             raise serializers.ValidationError('Level name can be only: Associate degree, Bachelor degree, '
                                               'Master degree, Doctoral degree')
         return value
