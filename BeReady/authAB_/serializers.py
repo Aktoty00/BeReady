@@ -30,7 +30,7 @@ class StudentSerializer(UserSerializer):
                                               first_name=validated_data.get('first_name', ''),
                                               last_name=validated_data.get('last_name', ''),
                                               stage=validated_data.get('stage', ''),
-                                              address=validated_data.get('address', ''))
+                                              age=validated_data.get('age', ''))
         student.set_password(validated_data['password'])
         student.save()
         return student

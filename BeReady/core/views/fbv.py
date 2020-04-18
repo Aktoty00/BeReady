@@ -4,10 +4,8 @@ from rest_framework.decorators import api_view
 from rest_framework import status
 
 from authAB_.models import Student
-from ..models import StudentWorkPost, NewsPost, StudentWorkDiscussion, \
-    NewsDiscussion, Lesson
-from ..serializers import StudentWorkPostSerializer, NewsPostLongSerializer, StudentWorkDiscussionSerializer, \
-    NewsDiscussionLongSerializer, LessonLongSerializer
+from ..models import Lesson
+from ..serializers import LessonLongSerializer
 
 
 @api_view(['GET', 'PUT', 'DELETE'])

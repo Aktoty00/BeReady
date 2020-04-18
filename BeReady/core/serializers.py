@@ -10,6 +10,7 @@ logger = logging.getLogger(__name__)
 
 
 class StudentWorkPostSerializer(serializers.Serializer):
+    id = serializers.ReadOnlyField()
     title = serializers.CharField(required=True)
     description = serializers.CharField(required=True)
     date = serializers.DateTimeField(read_only=True)
@@ -22,7 +23,8 @@ class StudentWorkPostSerializer(serializers.Serializer):
         return student_work_post
 
     def update(self, instance, validated_data):
-        instance.name = validated_data.get('name', instance.name)
+        instance.title = validated_data.get('title', instance.title)
+        instance.description = validated_data.get('description', instance.description)
         instance.save()
         return instance
 
@@ -39,7 +41,7 @@ class StudentWorkPostSerializer(serializers.Serializer):
 class NewsPostShortSerializer(serializers.ModelSerializer):
     class Meta:
         model = NewsPost
-        fields = ('title', 'description', 'date')
+        fields = ('id', 'title', 'description', 'date')
 
     def validate(self, attrs):
         return attrs
@@ -62,6 +64,7 @@ class NewsPostLongSerializer(NewsPostShortSerializer):
 
 
 class StudentWorkDiscussionSerializer(serializers.Serializer):
+    id = serializers.ReadOnlyField()
     comment = serializers.CharField(required=True)
     date = serializers.DateTimeField(read_only=True)
     post = StudentWorkPostSerializer(read_only=True)
@@ -76,7 +79,8 @@ class StudentWorkDiscussionSerializer(serializers.Serializer):
         return student_work_discussion
 
     def update(self, instance, validated_data):
-        instance.name = validated_data.get('name', instance.name)
+        instance.comment = validated_data.get('comment', instance.comment)
+        instance.date = validated_data.get('date', instance.date)
         instance.save()
         return instance
 
@@ -93,7 +97,7 @@ class StudentWorkDiscussionSerializer(serializers.Serializer):
 class NewsDiscussionShortSerializer(serializers.ModelSerializer):
     class Meta:
         model = NewsDiscussion
-        fields = ('comment', 'date')
+        fields = ('id', 'comment', 'date')
 
     def validate(self, attrs):
         return attrs
