@@ -1,7 +1,7 @@
 from rest_framework import mixins, generics
 
-from .models import Teacher, Student
-from .serializers import TeacherSerializer, StudentSerializer
+from ..models import Teacher, Student
+from ..serializers import TeacherSerializer, StudentSerializer
 
 
 class TeacherAPIView(mixins.ListModelMixin, mixins.CreateModelMixin, generics.GenericAPIView):
