@@ -27,6 +27,7 @@ class AbstractPost(models.Model):
 
 class StudentWorkPost(AbstractPost):
     file = models.FileField(upload_to='student_work_posts', blank=True, null=True)
+    owner = models.ForeignKey(MyUser, on_delete=models.CASCADE, related_name='sw_posts')
 
     class Meta:
         verbose_name = 'StudentWorkPost'
@@ -40,6 +41,7 @@ class NewsPost(AbstractPost):
     file = models.FileField(upload_to='news_posts', blank=True, null=True)
     objects = models.Manager()
     diana_objects = DianaManager()
+    owner = models.ForeignKey(MyUser, on_delete=models.CASCADE, related_name='news_posts')
 
     class Meta:
         verbose_name = 'NewsPost'
@@ -68,7 +70,7 @@ class AbstractDiscussion(models.Model):
 
 
 class AbstractPostDiscussion(AbstractDiscussion):
-    owner = models.ForeignKey(MyUser, on_delete=models.CASCADE, related_name='AbstractPostDiscussionOwner')
+    owner = models.ForeignKey(MyUser, on_delete=models.CASCADE, related_name='abstractPostDiscussion')
 
     class Meta:
         abstract = True
@@ -80,7 +82,7 @@ class AbstractPostDiscussion(AbstractDiscussion):
 
 
 class AbstractStudentWorkDiscussion(AbstractPostDiscussion):
-    post = models.ForeignKey(StudentWorkPost, on_delete=models.CASCADE)
+    post = models.ForeignKey(StudentWorkPost, on_delete=models.CASCADE,  related_name='studentWorkDiscussion_post')
 
     class Meta:
         abstract = True
@@ -93,7 +95,7 @@ class AbstractStudentWorkDiscussion(AbstractPostDiscussion):
 
 class StudentWorkDiscussion(AbstractStudentWorkDiscussion):
     sendTo = models.ForeignKey(Teacher, related_name='from_owner_send_to', on_delete=models.CASCADE)
-    owner = models.ForeignKey(MyUser, on_delete=models.CASCADE, related_name='StudentWorkDiscussionWithReplyOwner')
+    owner = models.ForeignKey(MyUser, on_delete=models.CASCADE, related_name='studentWorkDiscussion_owner')
     objects = DiscussionManager()
 
     class Meta:
@@ -105,7 +107,7 @@ class StudentWorkDiscussion(AbstractStudentWorkDiscussion):
 
 
 class NewsDiscussion(AbstractPostDiscussion):
-    post = models.ForeignKey(NewsPost, on_delete=models.CASCADE)
+    post = models.ForeignKey(NewsPost, on_delete=models.CASCADE, related_name='newsDiscussion_post')
 
     class Meta:
         verbose_name = 'NewsDiscussion'
@@ -130,8 +132,8 @@ class Class(models.Model):
 
 class Lesson(Class):
     subject = models.CharField(max_length=200, blank=True)
-    owner = models.ForeignKey(Teacher, on_delete=models.CASCADE)
-    students = models.ForeignKey(Student, on_delete=models.CASCADE, related_name='lessons')
+    owner = models.ForeignKey(Teacher, on_delete=models.CASCADE, related_name='lessons')
+    students = models.ForeignKey(Student, on_delete=models.SET_NULL, null=True, related_name='lessons')
 
     class Meta:
         verbose_name = 'Lesson'

@@ -1,12 +1,70 @@
 import logging
 
 from rest_framework import serializers
-import authAB_.serializers
-from authAB_.serializers import TeacherSerializer, StudentSerializer
+from authAB_.serializers import TeacherSerializer, StudentSerializer, UserSerializer
 from .models import StudentWorkPost, NewsPost, StudentWorkDiscussion, \
     NewsDiscussion, Lesson
 
 logger = logging.getLogger(__name__)
+
+
+class SWPostSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = StudentWorkPost
+        fields = ('id', 'title', 'description', 'date', 'owner')
+
+    def validate(self, attrs):
+        return attrs
+
+
+class StudentWorkDiscussionSerializer(serializers.Serializer):
+    id = serializers.ReadOnlyField()
+    comment = serializers.CharField(required=True)
+    date = serializers.DateTimeField(read_only=True)
+    post = SWPostSerializer(read_only=True)
+    post_id = serializers.IntegerField(write_only=True)
+    owner = UserSerializer(default=serializers.CurrentUserDefault())
+    sendTo = TeacherSerializer(read_only=True)
+    sendTo_id = serializers.IntegerField(write_only=True)
+
+    def create(self, validated_data):
+        student_work_discussion = StudentWorkDiscussion(**validated_data)
+        student_work_discussion.save()
+        return student_work_discussion
+
+    def update(self, instance, validated_data):
+        instance.comment = validated_data.get('comment', instance.comment)
+        instance.date = validated_data.get('date', instance.date)
+        instance.save()
+        return instance
+
+    def validate_comment(self, value):
+        if '$' in value:
+            logger.error(f'Invalid char detected in comment: {value}')
+            raise serializers.ValidationError('Invalid char detected in comment')
+        if len(value) == 0:
+            logger.error(f'Comment is empty')
+            raise serializers.ValidationError('Comment is empty, write something')
+        return value
+
+
+class NewsDiscussionShortSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = NewsDiscussion
+        fields = ('id', 'comment', 'date')
+
+    def validate(self, attrs):
+        return attrs
+
+
+class NewsDiscussionLongSerializer(NewsDiscussionShortSerializer):
+    owner = UserSerializer(default=serializers.CurrentUserDefault())
+
+    class Meta(NewsDiscussionShortSerializer.Meta):
+        fields = NewsDiscussionShortSerializer.Meta.fields + ('owner', 'post', 'owner_id')
+
+    def validate(self, attrs):
+        return attrs
 
 
 class StudentWorkPostSerializer(serializers.Serializer):
@@ -14,8 +72,9 @@ class StudentWorkPostSerializer(serializers.Serializer):
     title = serializers.CharField(required=True)
     description = serializers.CharField(required=True)
     date = serializers.DateTimeField(read_only=True)
-    owner = authAB_.serializers.UserSerializer(default=serializers.CurrentUserDefault())
+    owner = UserSerializer(default=serializers.CurrentUserDefault())
     file = serializers.FileField(required=False)
+    studentWorkDiscussion_post = StudentWorkDiscussionSerializer(many=True, required=False)
 
     def create(self, validated_data):
         student_work_post = StudentWorkPost(**validated_data)
@@ -54,60 +113,11 @@ class NewsPostShortSerializer(serializers.ModelSerializer):
 
 
 class NewsPostLongSerializer(NewsPostShortSerializer):
-    owner = authAB_.serializers.UserSerializer(default=serializers.CurrentUserDefault())
+    owner = UserSerializer(default=serializers.CurrentUserDefault())
+    newsDiscussion_post = NewsDiscussionLongSerializer(many=True, required=False)
 
     class Meta(NewsPostShortSerializer.Meta):
-        fields = NewsPostShortSerializer.Meta.fields + ('owner', 'file')
-
-    def validate(self, attrs):
-        return attrs
-
-
-class StudentWorkDiscussionSerializer(serializers.Serializer):
-    id = serializers.ReadOnlyField()
-    comment = serializers.CharField(required=True)
-    date = serializers.DateTimeField(read_only=True)
-    post = StudentWorkPostSerializer(read_only=True)
-    post_id = serializers.IntegerField(write_only=True)
-    owner = authAB_.serializers.UserSerializer(default=serializers.CurrentUserDefault())
-    sendTo = TeacherSerializer(read_only=True)
-    sendTo_id = serializers.IntegerField(write_only=True)
-
-    def create(self, validated_data):
-        student_work_discussion = StudentWorkDiscussion(**validated_data)
-        student_work_discussion.save()
-        return student_work_discussion
-
-    def update(self, instance, validated_data):
-        instance.comment = validated_data.get('comment', instance.comment)
-        instance.date = validated_data.get('date', instance.date)
-        instance.save()
-        return instance
-
-    def validate_comment(self, value):
-        if '$' in value:
-            logger.error(f'Invalid char detected in comment: {value}')
-            raise serializers.ValidationError('Invalid char detected in comment')
-        if len(value) == 0:
-            logger.error(f'Comment is empty')
-            raise serializers.ValidationError('Comment is empty, write something')
-        return value
-
-
-class NewsDiscussionShortSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = NewsDiscussion
-        fields = ('id', 'comment', 'date')
-
-    def validate(self, attrs):
-        return attrs
-
-
-class NewsDiscussionLongSerializer(NewsDiscussionShortSerializer):
-    owner = authAB_.serializers.UserSerializer(default=serializers.CurrentUserDefault())
-
-    class Meta(NewsDiscussionShortSerializer.Meta):
-        fields = NewsDiscussionShortSerializer.Meta.fields + ('owner', 'post', 'owner_id')
+        fields = NewsPostShortSerializer.Meta.fields + ('owner', 'file', 'newsDiscussion_post')
 
     def validate(self, attrs):
         return attrs
