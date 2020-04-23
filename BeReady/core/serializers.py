@@ -1,6 +1,8 @@
 import logging
 
 from rest_framework import serializers
+
+from authAB_.models import Teacher
 from authAB_.serializers import TeacherSerializer, StudentSerializer, UserSerializer
 from .models import StudentWorkPost, NewsPost, StudentWorkDiscussion, \
     NewsDiscussion, Lesson
@@ -132,6 +134,34 @@ class LessonShortSerializer(serializers.ModelSerializer):
 
     def validate(self, attrs):
         return attrs
+
+
+class TeacherLessonSerializer(serializers.Serializer):
+    id = serializers.IntegerField(read_only=True)
+    mobile = serializers.CharField(read_only=True)
+    address = serializers.CharField(read_only=True)
+    age = serializers.IntegerField(read_only=True)
+    level = serializers.CharField(read_only=True)
+    lessons = LessonShortSerializer(many=True, required=False)
+
+    def create(self, validated_data):
+        new_teacher = Teacher(**validated_data)
+        new_teacher.save()
+        return new_teacher
+
+
+class StudentLessonSerializer(serializers.Serializer):
+    id = serializers.IntegerField(read_only=True)
+    mobile = serializers.CharField(read_only=True)
+    address = serializers.CharField(read_only=True)
+    age = serializers.IntegerField(read_only=True)
+    stage = serializers.CharField(read_only=True)
+    lessons = LessonShortSerializer(many=True, required=False)
+
+    def create(self, validated_data):
+        new_student = Teacher(**validated_data)
+        new_student.save()
+        return new_student
 
 
 class LessonLongSerializer(LessonShortSerializer):

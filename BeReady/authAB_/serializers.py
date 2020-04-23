@@ -2,7 +2,8 @@ import logging
 
 from rest_framework import serializers
 
-from .models import MyUser, Teacher, Student, STAGE, LEVEL
+from .models import MyUser, Teacher, Student, STAGE, LEVEL, \
+    StudentProfile, TeacherProfile
 
 logger = logging.getLogger(__name__)
 
@@ -14,6 +15,19 @@ class UserSerializer(serializers.ModelSerializer):
 
     def validate(self, attrs):
         return attrs
+
+
+class StudentProfileSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = StudentProfile
+        fields = '__all__'
+
+
+class TeacherProfileSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = TeacherProfile
+        fields = '__all__'
 
 
 class StudentSerializer(UserSerializer):
@@ -47,15 +61,17 @@ class TeacherSerializer(UserSerializer):
     level = serializers.CharField(required=True)
     password = serializers.CharField(write_only=True)
 
+    # lessons = LessonShortSerializer(many=True, required=False)
+
     class Meta(UserSerializer.Meta):
         fields = UserSerializer.Meta.fields + ('level', 'password', 'email')
 
     def create(self, validated_data):
         teacher = Teacher.objects.create_user(username=validated_data['username'],
-                                          first_name=validated_data.get('first_name', ''),
-                                          last_name=validated_data.get('last_name', ''),
-                                          level=validated_data.get('level', ''),
-                                          address=validated_data.get('address', ''))
+                                              first_name=validated_data.get('first_name', ''),
+                                              last_name=validated_data.get('last_name', ''),
+                                              level=validated_data.get('level', ''),
+                                              address=validated_data.get('address', ''))
         teacher.set_password(validated_data['password'])
         teacher.save()
         return teacher

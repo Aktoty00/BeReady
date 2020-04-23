@@ -70,6 +70,7 @@ class ProfileAbstract(models.Model):
 
 class TeacherProfile(ProfileAbstract):
     user = models.OneToOneField(Teacher, on_delete=models.CASCADE)
+    objects = models.Manager()
 
     class Meta:
         verbose_name = 'Profile'
