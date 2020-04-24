@@ -24,3 +24,4 @@ class StudentAPIView(mixins.ListModelMixin, mixins.CreateModelMixin, generics.Ge
 
     def post(self, request, *args, **kwargs):
         return self.create(request, *args, **kwargs)
+
