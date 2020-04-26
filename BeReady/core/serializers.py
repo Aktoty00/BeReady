@@ -5,9 +5,20 @@ from rest_framework import serializers
 from authAB_.models import Teacher
 from authAB_.serializers import TeacherSerializer, StudentSerializer, UserSerializer
 from .models import StudentWorkPost, NewsPost, StudentWorkDiscussion, \
-    NewsDiscussion, Lesson
+    NewsDiscussion, Lesson, LastNotificationStudentWorkPost
 
 logger = logging.getLogger(__name__)
+
+
+class LessonShortSerializer(serializers.ModelSerializer):
+    id = serializers.IntegerField(read_only=True)
+
+    class Meta:
+        model = Lesson
+        fields = ('id', 'name', 'classCode', 'subject')
+
+    def validate(self, attrs):
+        return attrs
 
 
 class SWPostSerializer(serializers.ModelSerializer):
@@ -77,6 +88,8 @@ class StudentWorkPostSerializer(serializers.Serializer):
     owner = UserSerializer(default=serializers.CurrentUserDefault())
     file = serializers.FileField(required=False)
     studentWorkDiscussion_post = StudentWorkDiscussionSerializer(many=True, required=False)
+    lesson = LessonShortSerializer(read_only=True)
+    lesson_id = serializers.IntegerField(write_only=True)
 
     def create(self, validated_data):
         student_work_post = StudentWorkPost(**validated_data)
@@ -125,17 +138,6 @@ class NewsPostLongSerializer(NewsPostShortSerializer):
         return attrs
 
 
-class LessonShortSerializer(serializers.ModelSerializer):
-    id = serializers.IntegerField(read_only=True)
-
-    class Meta:
-        model = Lesson
-        fields = ('id', 'name', 'classCode', 'subject')
-
-    def validate(self, attrs):
-        return attrs
-
-
 class TeacherLessonSerializer(serializers.Serializer):
     id = serializers.IntegerField(read_only=True)
     mobile = serializers.CharField(read_only=True)
@@ -169,12 +171,29 @@ class LessonLongSerializer(LessonShortSerializer):
     owner_id = serializers.IntegerField(write_only=True)
     students = StudentSerializer(read_only=True)
     students_id = serializers.IntegerField(write_only=True)
+    posts = StudentWorkPostSerializer(many=True, required=False)
 
     class Meta(LessonShortSerializer.Meta):
-        fields = LessonShortSerializer.Meta.fields + ('owner', 'students', 'owner_id', 'students_id')
+        fields = LessonShortSerializer.Meta.fields + ('owner', 'students', 'owner_id', 'students_id', 'posts')
 
     def validate_subject(self, value):
         if len(value) == 0:
             logger.error(f'Subject is empty')
             raise serializers.ValidationError('Subject name can not be empty, please write something')
         return value
+
+
+class LastNotificationStudentWorkPostSerializer(serializers.ModelSerializer):
+    last_posts = StudentWorkPostSerializer(read_only=True)
+
+    class Meta:
+        model = LastNotificationStudentWorkPost
+        fields = ('id', 'last_posts')
+
+
+class LastNotificationStudentWorkPostDiscussionSerializer(serializers.ModelSerializer):
+    last_discussions = StudentWorkDiscussionSerializer(read_only=True)
+
+    class Meta:
+        model = LastNotificationStudentWorkPost
+        fields = ('id', 'last_discussions')
