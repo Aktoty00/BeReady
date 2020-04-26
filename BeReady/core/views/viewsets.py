@@ -31,7 +31,7 @@ class StudentWorkPostDetail(mixins.ListModelMixin,
             raise serializers.ValidationError('Invalid account, you have not access to do something,'
                                               ' because you are not teacher')
 
-    def update(self, request, *args, **kwargs):
+    def put(self, request, *args, **kwargs):
         teachers = Teacher.objects.all()
         is_teacher = False
         for teacher in teachers:
@@ -43,7 +43,7 @@ class StudentWorkPostDetail(mixins.ListModelMixin,
             raise serializers.ValidationError('Invalid account, you have not access to do something,'
                                               ' because you are not teacher')
 
-    def destroy(self, request, *args, **kwargs):
+    def delete(self, request, *args, **kwargs):
         teachers = Teacher.objects.all()
         is_teacher = False
         for teacher in teachers:
