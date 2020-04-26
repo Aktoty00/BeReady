@@ -9,6 +9,32 @@ class DianaManager(models.Manager):
         return self.filter(owner='Diana')
 
 
+class Class(models.Model):
+    name = models.CharField(max_length=200)
+    classCode = models.CharField(max_length=200)
+
+    class Meta:
+        abstract = True
+        verbose_name = 'Class'
+        verbose_name_plural = 'Classes'
+
+    def __str__(self):
+        return '{}: {}'.format(self.name, self.classCode)
+
+
+class Lesson(Class):
+    subject = models.CharField(max_length=200, blank=True)
+    owner = models.ForeignKey(Teacher, on_delete=models.CASCADE, related_name='lessons')
+    students = models.ForeignKey(Student, on_delete=models.SET_NULL, null=True, related_name='lessons')
+
+    class Meta:
+        verbose_name = 'Lesson'
+        verbose_name_plural = 'Lessons'
+
+    def __str__(self):
+        return '{}: {}, {}, {}, {}'.format(self.name, self.subject, self.classCode, self.owner, self.students)
+
+
 class AbstractPost(models.Model):
     title = models.CharField(max_length=200, blank=True)
     description = models.CharField(max_length=200)
@@ -27,6 +53,7 @@ class AbstractPost(models.Model):
 class StudentWorkPost(AbstractPost):
     file = models.FileField(upload_to='student_work_posts', blank=True, null=True)
     owner = models.ForeignKey(MyUser, on_delete=models.CASCADE, related_name='sw_posts')
+    lesson = models.ForeignKey(Lesson, on_delete=models.CASCADE, related_name='posts', default=5)
 
     class Meta:
         verbose_name = 'StudentWorkPost'
@@ -115,28 +142,3 @@ class NewsDiscussion(AbstractPostDiscussion):
     def __str__(self):
         return '{}: {}, {}, {}'.format(self.comment, self.date, self.owner, self.post)
 
-
-class Class(models.Model):
-    name = models.CharField(max_length=200)
-    classCode = models.CharField(max_length=200)
-
-    class Meta:
-        abstract = True
-        verbose_name = 'Class'
-        verbose_name_plural = 'Classes'
-
-    def __str__(self):
-        return '{}: {}'.format(self.name, self.classCode)
-
-
-class Lesson(Class):
-    subject = models.CharField(max_length=200, blank=True)
-    owner = models.ForeignKey(Teacher, on_delete=models.CASCADE, related_name='lessons')
-    students = models.ForeignKey(Student, on_delete=models.SET_NULL, null=True, related_name='lessons')
-
-    class Meta:
-        verbose_name = 'Lesson'
-        verbose_name_plural = 'Lessons'
-
-    def __str__(self):
-        return '{}: {}, {}, {}, {}'.format(self.name, self.subject, self.classCode, self.owner, self.students)
