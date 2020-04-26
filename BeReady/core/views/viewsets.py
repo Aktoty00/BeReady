@@ -1,8 +1,8 @@
 import logging
 
-from rest_framework import mixins
-from rest_framework import viewsets
+from rest_framework import mixins, viewsets, serializers
 
+from authAB_.models import Teacher
 from ..models import StudentWorkPost, NewsPost, StudentWorkDiscussion, NewsDiscussion
 from ..serializers import StudentWorkPostSerializer, NewsPostLongSerializer, \
     StudentWorkDiscussionSerializer, NewsDiscussionLongSerializer
@@ -11,13 +11,49 @@ logger = logging.getLogger(__name__)
 
 
 class StudentWorkPostDetail(mixins.ListModelMixin,
-                               mixins.RetrieveModelMixin,
-                               mixins.CreateModelMixin,
-                               mixins.UpdateModelMixin,
-                               mixins.DestroyModelMixin,
-                               viewsets.GenericViewSet):
+                            mixins.RetrieveModelMixin,
+                            mixins.CreateModelMixin,
+                            mixins.UpdateModelMixin,
+                            mixins.DestroyModelMixin,
+                            viewsets.GenericViewSet):
     queryset = StudentWorkPost.objects.all()
     serializer_class = StudentWorkPostSerializer
+
+    def create(self, request, *args, **kwargs):
+        teachers = Teacher.objects.all()
+        is_teacher = False
+        for teacher in teachers:
+            if request.user.id == teacher.id:
+                is_teacher = True
+        if is_teacher:
+            return self.create(request, *args, **kwargs)
+        else:
+            raise serializers.ValidationError('Invalid account, you have not access to do something,'
+                                              ' because you are not teacher')
+
+    def update(self, request, *args, **kwargs):
+        teachers = Teacher.objects.all()
+        is_teacher = False
+        for teacher in teachers:
+            if request.user.id == teacher.id:
+                is_teacher = True
+        if is_teacher:
+            return self.update(request, *args, **kwargs)
+        else:
+            raise serializers.ValidationError('Invalid account, you have not access to do something,'
+                                              ' because you are not teacher')
+
+    def destroy(self, request, *args, **kwargs):
+        teachers = Teacher.objects.all()
+        is_teacher = False
+        for teacher in teachers:
+            if request.user.id == teacher.id:
+                is_teacher = True
+        if is_teacher:
+            return self.destroy(request, *args, **kwargs)
+        else:
+            raise serializers.ValidationError('Invalid account, you have not access to do something,'
+                                              ' because you are not teacher')
 
     def perform_create(self, serializer):
         serializer.save()
@@ -29,11 +65,11 @@ class StudentWorkPostDetail(mixins.ListModelMixin,
 
 
 class NewsPostDetail(mixins.ListModelMixin,
-                       mixins.RetrieveModelMixin,
-                       mixins.CreateModelMixin,
-                       mixins.UpdateModelMixin,
-                       mixins.DestroyModelMixin,
-                       viewsets.GenericViewSet):
+                     mixins.RetrieveModelMixin,
+                     mixins.CreateModelMixin,
+                     mixins.UpdateModelMixin,
+                     mixins.DestroyModelMixin,
+                     viewsets.GenericViewSet):
     queryset = NewsPost.objects.all()
     serializer_class = NewsPostLongSerializer
 
@@ -47,11 +83,11 @@ class NewsPostDetail(mixins.ListModelMixin,
 
 
 class SWDiscussionsViewSet(mixins.ListModelMixin,
-                       mixins.RetrieveModelMixin,
-                       mixins.CreateModelMixin,
-                       mixins.UpdateModelMixin,
-                       mixins.DestroyModelMixin,
-                       viewsets.GenericViewSet):
+                           mixins.RetrieveModelMixin,
+                           mixins.CreateModelMixin,
+                           mixins.UpdateModelMixin,
+                           mixins.DestroyModelMixin,
+                           viewsets.GenericViewSet):
     queryset = StudentWorkDiscussion.objects.all()
     serializer_class = StudentWorkDiscussionSerializer
 
@@ -65,11 +101,11 @@ class SWDiscussionsViewSet(mixins.ListModelMixin,
 
 
 class NewsDiscussionsViewSet(mixins.ListModelMixin,
-                       mixins.RetrieveModelMixin,
-                       mixins.CreateModelMixin,
-                       mixins.UpdateModelMixin,
-                       mixins.DestroyModelMixin,
-                       viewsets.GenericViewSet):
+                             mixins.RetrieveModelMixin,
+                             mixins.CreateModelMixin,
+                             mixins.UpdateModelMixin,
+                             mixins.DestroyModelMixin,
+                             viewsets.GenericViewSet):
     queryset = NewsDiscussion.objects.all()
     serializer_class = NewsDiscussionLongSerializer
 

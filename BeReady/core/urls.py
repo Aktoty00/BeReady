@@ -17,7 +17,7 @@ router.register(r'studentWorkDiscussions', SWDiscussionsViewSet)
 router.register(r'newsDiscussions', NewsDiscussionsViewSet)
 
 urlpatterns = [
-    path('studentWorkPosts/', StudentWorkPostAPIView.as_view()),
+    # path('studentWorkPosts/', StudentWorkPostAPIView.as_view()),
     path('newsPosts/', NewsPostAPIView.as_view()),
     path('lessons/', LessonAPIView.as_view()),
     path('lessons/<int:pk>/', lesson_detail),

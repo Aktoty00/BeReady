@@ -14,7 +14,6 @@ class AbstractPost(models.Model):
     description = models.CharField(max_length=200)
     date = models.DateTimeField(auto_now_add=True)
     owner = models.ForeignKey(MyUser, on_delete=models.CASCADE)
-    # classes
 
     class Meta:
         abstract = True
