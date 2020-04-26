@@ -109,3 +109,4 @@ class StudentProfile(ProfileAbstract):
 
     def __str__(self):
         return '{}:'.format(self.user)
+
