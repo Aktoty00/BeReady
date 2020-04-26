@@ -169,7 +169,6 @@ class LessonLongSerializer(LessonShortSerializer):
     owner_id = serializers.IntegerField(write_only=True)
     students = StudentSerializer(read_only=True)
     students_id = serializers.IntegerField(write_only=True)
-    posts = SWPostSerializer(many=True, required=False)
 
     class Meta(LessonShortSerializer.Meta):
         fields = LessonShortSerializer.Meta.fields + ('owner', 'students', 'owner_id', 'students_id')

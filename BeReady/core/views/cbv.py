@@ -54,7 +54,7 @@ class LessonAPIView(mixins.ListModelMixin, mixins.CreateModelMixin, generics.Gen
                 is_teacher = True
 
         if is_teacher:
-            return self.list(request, *args, **kwargs)
+            return self.create(request, *args, **kwargs)
         else:
             raise serializers.ValidationError('Invalid account, you have not access to do something,'
                                               ' because you are not teacher')

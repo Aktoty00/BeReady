@@ -19,7 +19,7 @@ class StudentWorkPostDetail(mixins.ListModelMixin,
     queryset = StudentWorkPost.objects.all()
     serializer_class = StudentWorkPostSerializer
 
-    def create(self, request, *args, **kwargs):
+    def post(self, request, *args, **kwargs):
         teachers = Teacher.objects.all()
         is_teacher = False
         for teacher in teachers:
