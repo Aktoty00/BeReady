@@ -5,7 +5,7 @@ from rest_framework import serializers
 from authAB_.models import Teacher
 from authAB_.serializers import TeacherSerializer, StudentSerializer, UserSerializer
 from .models import StudentWorkPost, NewsPost, StudentWorkDiscussion, \
-    NewsDiscussion, Lesson
+    NewsDiscussion, Lesson, LastNotificationStudentWorkPost
 
 logger = logging.getLogger(__name__)
 
@@ -181,3 +181,19 @@ class LessonLongSerializer(LessonShortSerializer):
             logger.error(f'Subject is empty')
             raise serializers.ValidationError('Subject name can not be empty, please write something')
         return value
+
+
+class LastNotificationStudentWorkPostSerializer(serializers.ModelSerializer):
+    last_posts = StudentWorkPostSerializer(read_only=True)
+
+    class Meta:
+        model = LastNotificationStudentWorkPost
+        fields = ('id', 'last_posts')
+
+
+class LastNotificationStudentWorkPostDiscussionSerializer(serializers.ModelSerializer):
+    last_discussions = StudentWorkDiscussionSerializer(read_only=True)
+
+    class Meta:
+        model = LastNotificationStudentWorkPost
+        fields = ('id', 'last_discussions')

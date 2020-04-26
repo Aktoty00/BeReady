@@ -108,7 +108,7 @@ class AbstractPostDiscussion(AbstractDiscussion):
 
 
 class AbstractStudentWorkDiscussion(AbstractPostDiscussion):
-    post = models.ForeignKey(StudentWorkPost, on_delete=models.CASCADE,  related_name='studentWorkDiscussion_post')
+    post = models.ForeignKey(StudentWorkPost, on_delete=models.CASCADE, related_name='studentWorkDiscussion_post')
 
     class Meta:
         abstract = True
@@ -142,3 +142,24 @@ class NewsDiscussion(AbstractPostDiscussion):
     def __str__(self):
         return '{}: {}, {}, {}'.format(self.comment, self.date, self.owner, self.post)
 
+
+class LastNotificationStudentWorkPost(models.Model):
+    last_posts = models.OneToOneField(StudentWorkPost, on_delete=models.CASCADE)
+
+    class Meta:
+        verbose_name = 'LastNotificationStudentWorkPost'
+        verbose_name_plural = 'LastNotificationStudentWorkPosts'
+
+    def __str__(self):
+        return '{}:'.format(self.last_posts)
+
+
+class LastNotificationStudentWorkDiscussions(models.Model):
+    last_discussions = models.OneToOneField(StudentWorkDiscussion, on_delete=models.CASCADE)
+
+    class Meta:
+        verbose_name = 'LastNotificationStudentWorkPostDiscussion'
+        verbose_name_plural = 'LastNotificationStudentWorkPostsDiscussions'
+
+    def __str__(self):
+        return '{}:'.format(self.last_discussions)

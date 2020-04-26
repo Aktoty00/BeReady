@@ -3,9 +3,11 @@ import logging
 from rest_framework import mixins, viewsets, serializers
 
 from authAB_.models import Teacher
-from ..models import StudentWorkPost, NewsPost, StudentWorkDiscussion, NewsDiscussion
+from ..models import StudentWorkPost, NewsPost, StudentWorkDiscussion, \
+    NewsDiscussion, LastNotificationStudentWorkPost, LastNotificationStudentWorkDiscussions
 from ..serializers import StudentWorkPostSerializer, NewsPostLongSerializer, \
-    StudentWorkDiscussionSerializer, NewsDiscussionLongSerializer
+    StudentWorkDiscussionSerializer, NewsDiscussionLongSerializer, \
+    LastNotificationStudentWorkPostSerializer, LastNotificationStudentWorkPostDiscussionSerializer
 
 logger = logging.getLogger(__name__)
 
@@ -116,3 +118,15 @@ class NewsDiscussionsViewSet(mixins.ListModelMixin,
     def perform_update(self, serializer):
         serializer.save()
         logger.info(f'NewsDiscussions object updated, comment: {serializer.instance.comment}')
+
+
+class LastNotificationStudentWorkPostView(mixins.ListModelMixin,
+                                          viewsets.GenericViewSet):
+    queryset = LastNotificationStudentWorkPost.objects.all()[:10]
+    serializer_class = LastNotificationStudentWorkPostSerializer
+
+
+class LastNotificationStudentWorkDiscussionPostView(mixins.ListModelMixin,
+                                                    viewsets.GenericViewSet):
+    queryset = LastNotificationStudentWorkDiscussions.objects.all()[:10]
+    serializer_class = LastNotificationStudentWorkPostDiscussionSerializer

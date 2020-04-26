@@ -7,7 +7,8 @@ from core.views.cbv import StudentWorkPostAPIView, NewsPostAPIView, \
 from core.views.fbv import lesson_detail
 
 from core.views.viewsets import StudentWorkPostDetail, NewsPostDetail, \
-    SWDiscussionsViewSet, NewsDiscussionsViewSet
+    SWDiscussionsViewSet, NewsDiscussionsViewSet, \
+    LastNotificationStudentWorkPostView, LastNotificationStudentWorkDiscussionPostView
 
 router = DefaultRouter()
 
@@ -15,6 +16,8 @@ router.register(r'studentWorkPosts', StudentWorkPostDetail)
 router.register(r'newsPosts', NewsPostDetail)
 router.register(r'studentWorkDiscussions', SWDiscussionsViewSet)
 router.register(r'newsDiscussions', NewsDiscussionsViewSet)
+router.register(r'lastNotificationsStudentWorkPost', LastNotificationStudentWorkPostView)
+router.register(r'lastNotificationsDiscussion', LastNotificationStudentWorkDiscussionPostView)
 
 urlpatterns = [
     # path('studentWorkPosts/', StudentWorkPostAPIView.as_view()),
